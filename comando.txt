@@ -1,0 +1,1 @@
+.\main.exe      desde Developer powershell for vs
