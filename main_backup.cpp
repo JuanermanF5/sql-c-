@@ -1,6 +1,4 @@
-#include <windows.h>
 #include <iostream>
-#include <string>
 #include <sql.h>
 #include <sqlext.h>
 
@@ -10,16 +8,6 @@ int main() {
     SQLHDBC hDbc;
     SQLHSTMT hStmt;
     SQLRETURN ret;
-
-    // Pedir datos al usuario
-    std::string nombre;
-    int edad;
-
-    std::cout << "Nombre: ";
-    std::getline(std::cin, nombre);
-
-    std::cout << "Edad: ";
-    std::cin >> edad;
 
     // Crear entorno ODBC
     SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
@@ -55,27 +43,21 @@ int main() {
         SQL_DRIVER_NOPROMPT
     );
 
-    if (!SQL_SUCCEEDED(ret)) {
+    if (SQL_SUCCEEDED(ret)) {
+        std::cout << "Conectado a SQL Server correctamente.\n";
+    } else {
         std::cout << "Error al conectar a SQL Server.\n";
         return 1;
     }
 
-    std::cout << "\nConectado a SQL Server correctamente.\n";
-
     // Crear sentencia
     SQLAllocHandle(SQL_HANDLE_STMT, hDbc, &hStmt);
 
-    // Crear consulta usando los datos introducidos
-    std::string sql =
-        "INSERT INTO Personas (nombre, edad) VALUES ('" +
-        nombre + "', " +
-        std::to_string(edad) + ")";
+    SQLCHAR sql[] =
+        "INSERT INTO Personas (nombre, edad) "
+        "VALUES ('Juan', 18)";
 
-    ret = SQLExecDirect(
-        hStmt,
-        (SQLCHAR*)sql.c_str(),
-        SQL_NTS
-    );
+    ret = SQLExecDirect(hStmt, sql, SQL_NTS);
 
     if (SQL_SUCCEEDED(ret)) {
         std::cout << "Registro insertado correctamente.\n";
